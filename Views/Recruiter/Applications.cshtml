@@ -1,0 +1,267 @@
+﻿@model IEnumerable<TalentBridge.Models.JobApplication>
+
+@{
+    ViewData["Title"] = "Review Applicants";
+
+    var applications = Model.ToList();
+    var totalApplications = applications.Count;
+    var pendingApplications = applications.Count(a =>
+        a.Status == "Pending" || a.Status == "Under Review");
+    var shortlistedApplications = applications.Count(a =>
+        a.Status == "Shortlisted");
+}
+
+<section class="bg-light py-5">
+    <div class="container">
+
+        <a asp-controller="Recruiter"
+           asp-action="Index"
+           class="text-decoration-none">
+            &larr; Back to Recruiter Dashboard
+        </a>
+
+        <div class="mt-4 mb-4">
+            <span class="badge bg-primary-subtle text-primary mb-2">
+                Recruiter Workspace
+            </span>
+
+            <h1 class="display-6 fw-bold">Review Applicants</h1>
+
+            <h2 class="h4 mt-3">@ViewBag.JobTitle</h2>
+
+            <p class="text-secondary mb-0">
+                @ViewBag.CompanyName
+            </p>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-secondary mb-2">
+                            Total applications
+                        </p>
+                        <h2 class="fw-bold mb-0">@totalApplications</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-secondary mb-2">
+                            Awaiting a decision
+                        </p>
+                        <h2 class="fw-bold mb-0">@pendingApplications</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-secondary mb-2">
+                            Shortlisted
+                        </p>
+                        <h2 class="fw-bold mb-0">@shortlistedApplications</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (!applications.Any())
+        {
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body text-center p-5">
+                    <div class="mb-3">
+                        <i class="bi bi-people display-4 text-secondary"></i>
+                    </div>
+
+                    <h3 class="h4 fw-bold">No applicants yet</h3>
+
+                    <p class="text-secondary mb-0">
+                        Applications for this vacancy will appear here
+                        when candidates submit them.
+                    </p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex justify-content-between
+                align-items-center mb-3">
+                <h3 class="h5 fw-bold mb-0">Candidate applications</h3>
+
+                <span class="text-secondary small">
+                    @totalApplications candidate(s)
+                </span>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var application in applications)
+                {
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm rounded-4">
+                            <div class="card-body p-4">
+
+                                <div class="d-flex flex-column
+                                    flex-lg-row
+                                    justify-content-between
+                                    align-items-lg-start gap-3">
+
+                                    <div>
+                                        <h3 class="h5 fw-bold mb-1">
+                                            @(string.IsNullOrWhiteSpace(
+                                                application.Applicant.FullName)
+                                                ? "Candidate"
+                                                : application.Applicant.FullName)
+                                        </h3>
+
+                                        <p class="text-secondary mb-1">
+                                            <i class="bi bi-envelope me-2"></i>
+                                            @application.Applicant.Email
+                                        </p>
+
+                                        <p class="small text-secondary mb-0">
+                                            Applied:
+                                            @application.AppliedAt.ToString(
+                                                "dd MMM yyyy, HH:mm")
+                                        </p>
+                                        @if (!string.IsNullOrWhiteSpace(application.Applicant.CvFilePath))
+                                        {
+                                            <a asp-controller="Recruiter"
+                                               asp-action="DownloadApplicantCv"
+                                               asp-route-applicationId="@application.Id"
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-file-earmark-pdf"></i>
+                                                Download CV
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">
+                                                No CV uploaded
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <div>
+                                        @switch (application.Status)
+                                        {
+                                            case "Pending":
+                                                <span class="badge bg-warning-subtle text-warning-emphasis">
+                                                    Pending
+                                                </span>
+                                                break;
+
+                                            case "Under Review":
+                                                <span class="badge bg-info-subtle text-info-emphasis">
+                                                    Under Review
+                                                </span>
+                                                break;
+
+                                            case "Shortlisted":
+                                                <span class="badge bg-primary-subtle text-primary">
+                                                    Shortlisted
+                                                </span>
+                                                break;
+
+                                            case "Accepted":
+                                                <span class="badge bg-success-subtle text-success">
+                                                    Accepted
+                                                </span>
+                                                break;
+
+                                            case "Rejected":
+                                                <span class="badge bg-danger-subtle text-danger">
+                                                    Rejected
+                                                </span>
+                                                break;
+
+                                            default:
+                                                <span class="badge bg-secondary-subtle text-secondary">
+                                                    @application.Status
+                                                </span>
+                                                break;
+                                        }
+                                    </div>
+                                </div>
+
+                                <hr class="my-4" />
+
+                                <h4 class="h6 fw-bold">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    Cover letter
+                                </h4>
+
+                                <div class="bg-light rounded-3 p-3 mb-4"
+                                     style="white-space: pre-line; overflow-wrap: anywhere;">
+                                    @application.CoverLetter
+                                </div>
+
+                                <form asp-controller="Recruiter"
+                                      asp-action="UpdateApplicationStatus"
+                                      method="post"
+                                      class="row g-3 align-items-end">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="applicationId"
+                                           value="@application.Id" />
+
+                                    <div class="col-md-6 col-lg-4">
+                                        <label class="form-label fw-semibold"
+                                               for="status-@application.Id">
+                                            Update application status
+                                        </label>
+
+                                        <select id="status-@application.Id"
+                                                name="status"
+                                                class="form-select"
+                                                required>
+                                            <option value="Pending"
+                                                    selected="@(application.Status == "Pending")">
+                                                Pending
+                                            </option>
+
+                                            <option value="Under Review"
+                                                    selected="@(application.Status == "Under Review")">
+                                                Under Review
+                                            </option>
+
+                                            <option value="Shortlisted"
+                                                    selected="@(application.Status == "Shortlisted")">
+                                                Shortlisted
+                                            </option>
+
+                                            <option value="Accepted"
+                                                    selected="@(application.Status == "Accepted")">
+                                                Accepted
+                                            </option>
+
+                                            <option value="Rejected"
+                                                    selected="@(application.Status == "Rejected")">
+                                                Rejected
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-auto">
+                                        <button type="submit"
+                                                class="btn btn-primary">
+                                            <i class="bi bi-check2-circle me-2"></i>
+                                            Save status
+                                        </button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</section>

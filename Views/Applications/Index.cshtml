@@ -1,0 +1,179 @@
+﻿@model IEnumerable<TalentBridge.Models.JobApplication>
+
+@{
+    ViewData["Title"] = "My Applications";
+    var applications = Model.ToList();
+}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <span class="text-primary fw-semibold">APPLICANT PORTAL</span>
+        <h1 class="fw-bold mt-2">My Applications</h1>
+        <p class="text-secondary">
+            Keep track of your applications and recruitment progress.
+        </p>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+            @successMessage
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] is string errorMessage)
+    {
+        <div class="alert alert-warning alert-dismissible fade show"
+             role="alert">
+            @errorMessage
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-2">Total applications</p>
+                    <h2 class="fw-bold mb-0">@applications.Count</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-2">Pending review</p>
+                    <h2 class="fw-bold text-warning mb-0">
+                        @applications.Count(a =>
+                            a.Status == "Pending" ||
+                            a.Status == "Under Review")
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <p class="text-secondary mb-2">Shortlisted</p>
+                    <h2 class="fw-bold text-success mb-0">
+                        @applications.Count(a => a.Status == "Shortlisted")
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!applications.Any())
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5 px-3">
+                <div class="display-5 mb-3">📄</div>
+                <h4 class="fw-bold">You haven't applied for any jobs yet</h4>
+                <p class="text-secondary">
+                    Explore available opportunities and submit your first application.
+                </p>
+                <a asp-controller="Jobs"
+                   asp-action="Index"
+                   class="btn btn-primary">
+                    Browse vacancies
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Vacancy</th>
+                                <th>Company</th>
+                                <th>Date applied</th>
+                                <th>Status</th>
+                                <th class="text-end pe-4">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var application in applications)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <span class="fw-semibold">
+                                            @application.Job.Title
+                                        </span>
+                                    </td>
+
+                                    <td>@application.Job.CompanyName</td>
+
+                                    <td>
+                                        @application.AppliedAt.ToLocalTime()
+                                        .ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @switch (application.Status)
+                                        {
+                                            case "Pending":
+                                                <span class="badge text-bg-warning">
+                                                    Pending
+                                                </span>
+                                                break;
+
+                                            case "Under Review":
+                                                <span class="badge text-bg-info">
+                                                    Under Review
+                                                </span>
+                                                break;
+
+                                            case "Shortlisted":
+                                                <span class="badge text-bg-success">
+                                                    Shortlisted
+                                                </span>
+                                                break;
+
+                                            case "Accepted":
+                                                <span class="badge text-bg-primary">
+                                                    Accepted
+                                                </span>
+                                                break;
+
+                                            case "Rejected":
+                                                <span class="badge text-bg-danger">
+                                                    Rejected
+                                                </span>
+                                                break;
+
+                                            default:
+                                                <span class="badge text-bg-secondary">
+                                                    @application.Status
+                                                </span>
+                                                break;
+                                        }
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <a asp-controller="Jobs"
+                                           asp-action="Details"
+                                           asp-route-id="@application.JobId"
+                                           class="btn btn-sm btn-outline-primary">
+                                            View vacancy
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

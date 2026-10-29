@@ -1,0 +1,168 @@
+﻿```cshtml
+@model TalentBridge.Models.Job
+
+@{
+    ViewData["Title"] = Model.Title;
+
+    var southAfricanCulture =
+        System.Globalization.CultureInfo.GetCultureInfo("en-ZA");
+}
+
+<section class="bg-light py-5">
+    <div class="container">
+
+        <a asp-controller="Jobs"
+           asp-action="Index"
+           class="text-decoration-none">
+            &larr; Back to job listings
+        </a>
+
+        <div class="card border-0 shadow-sm rounded-4 mt-4">
+            <div class="card-body p-4 p-md-5">
+
+                <span class="badge bg-primary-subtle text-primary mb-3">
+                    @Model.EmploymentType
+                </span>
+
+                <h1 class="display-6 fw-bold">
+                    @Model.Title
+                </h1>
+
+                <p class="fs-5 fw-semibold mt-3 mb-2">
+                    @Model.CompanyName
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 text-secondary mb-4">
+                    <span>
+                        <i class="bi bi-geo-alt"></i>
+                        @Model.Location
+                    </span>
+
+                    <span>
+                        <i class="bi bi-calendar3"></i>
+                        Posted @Model.PostedAt.ToString("dd MMM yyyy")
+                    </span>
+                </div>
+
+                <hr />
+
+                <h2 class="h5 fw-bold mt-4">Salary</h2>
+
+                @if (Model.SalaryMin.HasValue &&
+                     Model.SalaryMax.HasValue)
+                {
+                    <p>
+                        @Model.SalaryMin.Value.ToString("C0", southAfricanCulture)
+                        -
+                        @Model.SalaryMax.Value.ToString("C0", southAfricanCulture)
+                    </p>
+                }
+                else if (Model.SalaryMin.HasValue)
+                {
+                    <p>
+                        From @Model.SalaryMin.Value.ToString("C0", southAfricanCulture)
+                    </p>
+                }
+                else if (Model.SalaryMax.HasValue)
+                {
+                    <p>
+                        Up to @Model.SalaryMax.Value.ToString("C0", southAfricanCulture)
+                    </p>
+                }
+                else
+                {
+                    <p class="text-secondary">Not specified</p>
+                }
+
+                @if (Model.ClosingDate.HasValue)
+                {
+                    <h2 class="h5 fw-bold mt-4">Closing date</h2>
+
+                    <p>
+                        @Model.ClosingDate.Value.ToString("dd MMMM yyyy")
+                    </p>
+                }
+
+                <h2 class="h4 fw-bold mt-4">Job description</h2>
+
+                <div class="job-description mt-3"
+                     style="white-space: pre-line;">
+                    @Model.Description
+                </div>
+
+                <hr class="my-4" />
+
+                @if (Model.ClosingDate.HasValue &&
+                     Model.ClosingDate.Value.Date <
+                     DateTime.UtcNow.Date)
+                {
+                    <div class="alert alert-warning mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Applications for this vacancy are closed.
+                    </div>
+                }
+                else if (User.Identity?.IsAuthenticated == true &&
+                         User.IsInRole("Applicant"))
+                {
+                    <div class="d-flex flex-column flex-md-row
+                        justify-content-between align-items-md-center gap-3">
+
+                        <div>
+                            <h2 class="h5 fw-bold mb-1">
+                                Interested in this opportunity?
+                            </h2>
+
+                            <p class="text-secondary mb-0">
+                                Submit your application and cover letter
+                                through TalentBridge.
+                            </p>
+                        </div>
+
+                        <a asp-controller="Applications"
+                           asp-action="Apply"
+                           asp-route-jobId="@Model.Id"
+                           class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-send me-2"></i>
+                            Apply for this job
+                        </a>
+                    </div>
+                }
+                else if (User.Identity?.IsAuthenticated != true)
+                {
+                    <div class="d-flex flex-column flex-md-row
+                        justify-content-between align-items-md-center gap-3">
+
+                        <div>
+                            <h2 class="h5 fw-bold mb-1">
+                                Ready to apply?
+                            </h2>
+
+                            <p class="text-secondary mb-0">
+                                Sign in to your applicant account to submit
+                                your application.
+                            </p>
+                        </div>
+
+                        <a asp-controller="Account"
+                           asp-action="Login"
+                           asp-route-returnUrl="@Url.Action("Details", "Jobs", new { id = Model.Id })"
+                           class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Sign in to apply
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Sign in with an applicant account to apply for
+                        this vacancy.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</section>
+```

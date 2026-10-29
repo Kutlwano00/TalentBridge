@@ -1,0 +1,116 @@
+﻿@model TalentBridge.Models.ViewModels.JobViewModel
+
+@{
+    ViewData["Title"] = "Edit Vacancy";
+}
+
+<div class="container py-5" style="max-width: 900px;">
+    <a asp-action="Index" class="text-decoration-none text-secondary">
+        ← Back to dashboard
+    </a>
+
+    <div class="mt-4 mb-4">
+        <span class="text-primary fw-semibold">RECRUITER PORTAL</span>
+        <h1 class="fw-bold mt-2">Edit vacancy</h1>
+        <p class="text-secondary">
+            Update the information candidates see on your job listing.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <input asp-for="Id" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CompanyName" class="form-label"></label>
+                        <input asp-for="CompanyName" class="form-control" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Location" class="form-label"></label>
+                        <input asp-for="Location" class="form-control" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="EmploymentType" class="form-label"></label>
+                        <select asp-for="EmploymentType" class="form-select">
+                            <option value="">Select employment type</option>
+                            @foreach (string type in (string[])ViewBag.EmploymentTypes)
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        </select>
+                        <span asp-validation-for="EmploymentType" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SalaryMin" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">R</span>
+                            <input asp-for="SalaryMin" class="form-control"
+                                   type="number" min="0" step="0.01" />
+                        </div>
+                        <span asp-validation-for="SalaryMin" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SalaryMax" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">R</span>
+                            <input asp-for="SalaryMax" class="form-control"
+                                   type="number" min="0" step="0.01" />
+                        </div>
+                        <span asp-validation-for="SalaryMax" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ClosingDate" class="form-label"></label>
+                        <input asp-for="ClosingDate" class="form-control" type="date" />
+                        <span asp-validation-for="ClosingDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control" rows="8"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsPublished" class="form-check-input" />
+                            <label asp-for="IsPublished" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Save changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

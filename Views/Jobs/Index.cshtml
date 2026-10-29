@@ -1,0 +1,200 @@
+﻿@model IEnumerable<TalentBridge.Models.Job>
+
+@{
+    ViewData["Title"] = "Find Jobs";
+}
+
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-4">
+            <span class="badge bg-primary-subtle text-primary mb-3">
+                YOUR NEXT OPPORTUNITY
+            </span>
+
+            <h1 class="display-5 fw-bold">
+                Find a job that moves you forward.
+            </h1>
+
+            <p class="text-secondary mt-3">
+                Discover opportunities from companies looking for talent like you.
+            </p>
+        </div>
+
+        <form asp-controller="Jobs"
+              asp-action="Index"
+              method="get"
+              class="bg-white rounded-4 shadow-sm p-3 p-md-4">
+
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-4">
+                    <label for="searchTerm" class="form-label">
+                        Job title or keyword
+                    </label>
+
+                    <input id="searchTerm"
+                           name="searchTerm"
+                           value="@ViewBag.SearchTerm"
+                           class="form-control form-control-lg"
+                           placeholder="e.g. Software Developer" />
+                </div>
+
+                <div class="col-lg-3">
+                    <label for="location" class="form-label">
+                        Location
+                    </label>
+
+                    <input id="location"
+                           name="location"
+                           value="@ViewBag.Location"
+                           class="form-control form-control-lg"
+                           placeholder="e.g. Johannesburg" />
+                </div>
+
+                <div class="col-lg-3">
+                    <label for="employmentType" class="form-label">
+                        Employment type
+                    </label>
+
+                    <select id="employmentType"
+                            name="employmentType"
+                            class="form-select form-select-lg">
+                        <option value="">All types</option>
+
+                        @foreach (string type in (string[])ViewBag.EmploymentTypes)
+                        {
+                            if ((string?)ViewBag.EmploymentType == type)
+                            {
+                                <option value="@type" selected>@type</option>
+                            }
+                            else
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-2">
+                    <button type="submit"
+                            class="btn btn-primary btn-lg w-100">
+                        Search Jobs
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between
+        align-items-md-center gap-2 mb-4">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Latest opportunities</h2>
+            <p class="text-secondary mb-0">
+                Explore available positions and find your next career move.
+            </p>
+        </div>
+
+        <span class="text-secondary">
+            @Model.Count() job(s) found
+        </span>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var job in Model)
+            {
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md">
+                                    <span class="badge bg-primary-subtle text-primary mb-2">
+                                        @job.EmploymentType
+                                    </span>
+
+                                    <h3 class="h5 fw-bold mb-2">
+                                        <a asp-controller="Jobs"
+                                           asp-action="Details"
+                                           asp-route-id="@job.Id"
+                                           class="text-decoration-none text-dark">
+                                            @job.Title
+                                        </a>
+                                    </h3>
+
+                                    <p class="fw-semibold mb-2">
+                                        @job.CompanyName
+                                    </p>
+
+                                    <div class="d-flex flex-wrap gap-3 text-secondary small">
+                                        <span>
+                                            <i class="bi bi-geo-alt"></i>
+                                            @job.Location
+                                        </span>
+
+                                        <span>
+                                            Posted @job.PostedAt.ToString("dd MMM yyyy")
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-auto text-md-end">
+                                    @if (job.SalaryMin.HasValue ||
+                                         job.SalaryMax.HasValue)
+                                    {
+                                        <p class="fw-semibold mb-3">
+                                            @if (job.SalaryMin.HasValue &&
+                                                 job.SalaryMax.HasValue)
+                                            {
+                                                @($"{job.SalaryMin.Value.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))} - {job.SalaryMax.Value.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))}")
+                                            }
+                                            else if (job.SalaryMin.HasValue)
+                                            {
+                                                @($"From {job.SalaryMin.Value.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))}")
+                                            }
+                                            else
+                                            {
+                                                @($"Up to {job.SalaryMax!.Value.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-ZA"))}")
+                                            }
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-secondary small mb-3">
+                                            Salary not specified
+                                        </p>
+                                    }
+
+                                    <a asp-controller="Jobs"
+                                       asp-action="Details"
+                                       asp-route-id="@job.Id"
+                                       class="btn btn-outline-primary px-4">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center bg-light rounded-4 py-5 px-3">
+            <h3 class="h4 fw-bold">No matching jobs yet</h3>
+
+            <p class="text-secondary mt-2 mb-4">
+                Try changing your keywords or location, or check back later
+                as new opportunities are published.
+            </p>
+
+            <a asp-controller="Jobs"
+               asp-action="Index"
+               class="btn btn-outline-primary">
+                Clear filters
+            </a>
+        </div>
+    }
+</section>

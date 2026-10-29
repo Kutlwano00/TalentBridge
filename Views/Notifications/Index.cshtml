@@ -1,0 +1,71 @@
+﻿@model IEnumerable<TalentBridge.Models.Notification>
+
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container-fluid py-3">
+    <div class="mb-4">
+        <span class="text-primary fw-semibold small text-uppercase">
+            Your updates
+        </span>
+        <h1 class="fw-bold mt-2">Notifications</h1>
+        <p class="text-secondary">
+            Keep track of updates about your job applications.
+        </p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center py-5">
+                <div class="display-5 mb-3">♧</div>
+                <h5 class="fw-bold">You're all caught up!</h5>
+                <p class="text-secondary mb-0">
+                    You don't have any notifications yet.
+                </p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var notification in Model)
+            {
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="rounded-3 bg-primary-subtle text-primary
+                                d-flex align-items-center justify-content-center"
+                                 style="width:44px;height:44px;flex-shrink:0;">
+                                ♧
+                            </div>
+
+                            <div class="flex-grow-1">
+                                <h6 class="fw-bold mb-2">
+                                    @notification.Title
+                                </h6>
+
+                                <p class="text-secondary mb-2">
+                                    @notification.Message
+                                </p>
+
+                                <small class="text-muted">
+                                    @notification.CreatedAt.ToLocalTime()
+                                    .ToString("dd MMM yyyy, HH:mm")
+                                </small>
+                            </div>
+
+                            @if (!notification.IsRead)
+                            {
+                                <span class="badge rounded-pill bg-primary">
+                                    New
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

@@ -1,0 +1,446 @@
+﻿@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.DependencyInjection
+@using TalentBridge.Models
+
+@{
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+
+    var currentController =
+        ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    var unreadCount = 0;
+
+    if (isAuthenticated && User.IsInRole("Applicant") &&
+        !string.IsNullOrEmpty(currentUserId))
+    {
+        try
+        {
+            var dbContext = Context.RequestServices
+                .GetRequiredService<ApplicationDbContext>();
+
+            unreadCount = dbContext.Notifications.Count(n =>
+                n.UserId == currentUserId && !n.IsRead);
+        }
+        catch
+        {
+            unreadCount = 0;
+        }
+    }
+
+    string ActiveClass(string controller, string? action = null)
+    {
+        var controllerMatches = string.Equals(
+            currentController, controller,
+            StringComparison.OrdinalIgnoreCase);
+
+        var actionMatches = action == null ||
+            string.Equals(
+                currentAction, action,
+                StringComparison.OrdinalIgnoreCase);
+
+        return controllerMatches && actionMatches ? "active" : "";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - TalentBridge</title>
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/TalentBridge.styles.css"
+          asp-append-version="true" />
+</head>
+
+<body>
+
+    @if (isAuthenticated)
+    {
+        <!-- Signed-in layout with sidebar -->
+        <div class="authenticated-layout">
+
+            <aside class="app-sidebar" id="appSidebar">
+
+                <a class="brand-logo sidebar-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+                    <span class="brand-icon">T</span>
+                    <span>TalentBridge</span>
+                </a>
+
+                <div class="sidebar-section-label">MAIN MENU</div>
+
+                <nav class="sidebar-navigation" aria-label="Main navigation">
+
+                    <a class="sidebar-link @ActiveClass("Home", "Index")"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        <span class="sidebar-icon">⌂</span>
+                        <span>Home</span>
+                    </a>
+
+                    <a class="sidebar-link @ActiveClass("Jobs", "Index")"
+                       asp-controller="Jobs"
+                       asp-action="Index">
+                        <span class="sidebar-icon">⌕</span>
+                        <span>Find Jobs</span>
+                    </a>
+
+                    <a class="sidebar-link"
+                       asp-controller="Home"
+                       asp-action="Index"
+                       asp-fragment="how-it-works">
+                        <span class="sidebar-icon">ⓘ</span>
+                        <span>How It Works</span>
+                    </a>
+
+                    @if (User.IsInRole("Applicant"))
+                    {
+                        <div class="sidebar-section-label">MY CAREER</div>
+
+                        <a class="sidebar-link @ActiveClass("Applications", "Index")"
+                           asp-controller="Applications"
+                           asp-action="Index">
+                            <span class="sidebar-icon">▤</span>
+                            <span>My Applications</span>
+                        </a>
+
+                        <a class="sidebar-link @ActiveClass("Profile", "Index")"
+                           asp-controller="Profile"
+                           asp-action="Index">
+                            <span class="sidebar-icon">♙</span>
+                            <span>My Profile</span>
+                        </a>
+
+                        <a class="sidebar-link @ActiveClass("Notifications", "Index")"
+                           asp-controller="Notifications"
+                           asp-action="Index">
+                            <span class="sidebar-icon">♧</span>
+                            <span>Notifications</span>
+
+                            @if (unreadCount > 0)
+                            {
+                                <span class="sidebar-notification-count">
+                                    @unreadCount
+                                </span>
+                            }
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Recruiter") ||
+                         User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-section-label">RECRUITMENT</div>
+
+                        <a class="sidebar-link @ActiveClass("Recruiter")"
+                           asp-controller="Recruiter"
+                           asp-action="Index">
+                            <span class="sidebar-icon">▦</span>
+                            <span>Recruiter Dashboard</span>
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="sidebar-section-label">ADMINISTRATION</div>
+
+                        <a class="sidebar-link @ActiveClass("Admin")"
+                           asp-controller="Admin"
+                           asp-action="Index">
+                            <span class="sidebar-icon">⚙</span>
+                            <span>Admin Panel</span>
+                        </a>
+                    }
+
+                </nav>
+
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user">
+                        <div class="sidebar-avatar">
+                            @((User.Identity?.Name ?? "U").Substring(0, 1).ToUpper())
+                        </div>
+
+                        <div class="sidebar-user-details">
+                            <div class="sidebar-user-name">
+                                @(User.Identity?.Name ?? "User")
+                            </div>
+
+                            <div class="sidebar-user-role">
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <span>Administrator</span>
+                                }
+                                else if (User.IsInRole("Recruiter"))
+                                {
+                                    <span>Recruiter</span>
+                                }
+                                else
+                                {
+                                    <span>Applicant</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="sidebar-logout-form">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit" class="sidebar-logout">
+                            <span class="sidebar-icon">⇥</span>
+                            <span>Sign Out</span>
+                        </button>
+                    </form>
+                </div>
+
+            </aside>
+
+            <div class="authenticated-main">
+
+                <header class="app-topbar">
+                    <button class="sidebar-mobile-toggle"
+                            type="button"
+                            id="sidebarToggle"
+                            aria-label="Toggle navigation"
+                            aria-controls="appSidebar"
+                            aria-expanded="false">
+                        ☰
+                    </button>
+
+                    <div class="topbar-page-info">
+                        <div class="topbar-title">
+                            @ViewData["Title"]
+                        </div>
+                        <div class="topbar-subtitle">
+                            Connecting great people with great opportunities.
+                        </div>
+                    </div>
+
+                    <div class="topbar-welcome">
+                        Welcome, @(User.Identity?.Name ?? "User")
+                    </div>
+                </header>
+
+                <main class="app-content" role="main">
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show"
+                             role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show"
+                             role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @RenderBody()
+
+                </main>
+
+                <footer class="app-footer">
+                    <span>
+                        &copy; @DateTime.Now.Year TalentBridge.
+                        Built with ASP.NET Core MVC.
+                    </span>
+                </footer>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Public layout for visitors and signed-out users -->
+        <header>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+                <div class="container py-2">
+
+                    <a class="navbar-brand brand-logo"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        <span class="brand-icon">T</span> TalentBridge
+                    </a>
+
+                    <button class="navbar-toggler"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#mainNavbar"
+                            aria-controls="mainNavbar"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+
+                        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Home"
+                                   asp-action="Index">
+                                    Home
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Jobs"
+                                   asp-action="Index">
+                                    Find Jobs
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Home"
+                                   asp-action="Index"
+                                   asp-fragment="how-it-works">
+                                    How It Works
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
+                            <a class="btn btn-outline-primary px-4"
+                               asp-controller="Account"
+                               asp-action="Login">
+                                Log In
+                            </a>
+
+                            <a class="btn btn-primary px-4"
+                               asp-controller="Account"
+                               asp-action="Register">
+                                Get Started
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main role="main">
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-success alert-dismissible fade show"
+                         role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                    </div>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="container mt-3">
+                    <div class="alert alert-warning alert-dismissible fade show"
+                         role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="alert"
+                                aria-label="Close"></button>
+                    </div>
+                </div>
+            }
+
+            @RenderBody()
+
+        </main>
+
+        <footer class="site-footer mt-5">
+            <div class="container py-4">
+                <div class="row align-items-center gy-3">
+
+                    <div class="col-md-6">
+                        <a class="navbar-brand brand-logo"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            <span class="brand-icon">T</span> TalentBridge
+                        </a>
+
+                        <p class="text-secondary small mb-0 mt-2">
+                            Connecting great people with great opportunities.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6 text-md-end">
+                        <span class="text-secondary small">
+                            &copy; @DateTime.Now.Year TalentBridge.
+                            Built with ASP.NET Core MVC.
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    }
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggle = document.getElementById("sidebarToggle");
+                const sidebar = document.getElementById("appSidebar");
+
+                if (toggle && sidebar) {
+                    toggle.addEventListener("click", function () {
+                        const isOpen = sidebar.classList.toggle("sidebar-open");
+                        toggle.setAttribute("aria-expanded", isOpen.toString());
+                    });
+
+                    document.addEventListener("click", function (event) {
+                        if (window.innerWidth <= 768 &&
+                            sidebar.classList.contains("sidebar-open") &&
+                            !sidebar.contains(event.target) &&
+                            !toggle.contains(event.target)) {
+                            sidebar.classList.remove("sidebar-open");
+                            toggle.setAttribute("aria-expanded", "false");
+                        }
+                    });
+                }
+            });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

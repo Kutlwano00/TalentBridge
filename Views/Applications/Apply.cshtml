@@ -1,0 +1,84 @@
+﻿@model TalentBridge.Models.ViewModels.JobApplicationViewModel
+
+@{
+    ViewData["Title"] = "Apply for " + Model.JobTitle;
+}
+
+<div class="container py-5" style="max-width: 850px;">
+
+    <a asp-controller="Jobs"
+       asp-action="Details"
+       asp-route-id="@Model.JobId"
+       class="text-decoration-none text-secondary">
+        ← Back to vacancy
+    </a>
+
+    <div class="mt-4 mb-4">
+        <span class="text-primary fw-semibold">TALENTBRIDGE APPLICATIONS</span>
+        <h1 class="fw-bold mt-2">Apply for this vacancy</h1>
+        <p class="text-secondary">
+            Tell the employer why you are a good fit for this opportunity.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h4 class="fw-bold">@Model.JobTitle</h4>
+            <p class="text-secondary mb-0">@Model.CompanyName</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+            <form asp-action="Apply" method="post">
+                @Html.AntiForgeryToken()
+
+                <input asp-for="JobId" type="hidden" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-4">
+                    <label asp-for="CoverLetter"
+                           class="form-label fw-semibold"></label>
+
+                    <textarea asp-for="CoverLetter"
+                              class="form-control"
+                              rows="10"
+                              placeholder="Introduce yourself, explain your relevant skills and experience, and describe why you are interested in this position."></textarea>
+
+                    <span asp-validation-for="CoverLetter"
+                          class="text-danger"></span>
+
+                    <div class="form-text">
+                        Write between 20 and 3,000 characters.
+                        Make your cover letter specific to this vacancy.
+                    </div>
+                </div>
+
+                <div class="alert alert-light border">
+                    <strong>Before submitting:</strong>
+                    Review your cover letter carefully. Your application
+                    will be recorded in your application history.
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Submit application
+                    </button>
+
+                    <a asp-controller="Jobs"
+                       asp-action="Details"
+                       asp-route-id="@Model.JobId"
+                       class="btn btn-outline-secondary btn-lg">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

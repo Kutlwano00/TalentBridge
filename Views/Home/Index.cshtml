@@ -1,0 +1,177 @@
+﻿@{
+    ViewData["Title"] = "Find Your Next Opportunity";
+}
+
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7">
+                <span class="eyebrow">
+                    <span class="status-dot"></span>
+                    YOUR CAREER STARTS HERE
+                </span>
+
+                <h1 class="hero-title mt-4">
+                    Your next opportunity
+                    <span class="text-gradient">starts here.</span>
+                </h1>
+
+                <p class="hero-description mt-4">
+                    Discover opportunities that match your skills and
+                    ambitions. Connect with employers who are looking
+                    for someone like you.
+                </p>
+
+                <form class="job-search mt-4" asp-controller="Jobs"
+                      asp-action="Index" method="get">
+                    <div class="search-field">
+                        <label for="keyword">What are you looking for?</label>
+                        <input id="keyword" name="search"
+                               type="text"
+                               placeholder="Job title, skill or company" />
+                    </div>
+
+                    <div class="search-divider"></div>
+
+                    <div class="search-field location-field">
+                        <label for="location">Location</label>
+                        <input id="location" name="location"
+                               type="text"
+                               placeholder="City or province" />
+                    </div>
+
+                    <button class="btn btn-primary search-button"
+                            type="submit">
+                        Search Jobs
+                    </button>
+                </form>
+
+                <p class="popular-searches mt-3">
+                    Popular skills:
+                    <span>C#</span>
+                    <span>SQL</span>
+                    <span>Cloud</span>
+                    <span>Data Analytics</span>
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="opportunity-card">
+                    <div class="opportunity-card-top">
+                        <div>
+                            <span class="mini-label">CAREER OPPORTUNITY</span>
+                            <h5 class="mt-2 mb-1">Find your next move</h5>
+                            <p class="text-secondary small mb-0">
+                                Make your skills count.
+                            </p>
+                        </div>
+                        <div class="opportunity-icon">↗</div>
+                    </div>
+
+                    <div class="career-illustration">
+                        <div class="illustration-orbit orbit-one"></div>
+                        <div class="illustration-orbit orbit-two"></div>
+
+                        <div class="career-document">
+                            <div class="document-avatar">TB</div>
+                            <div class="document-line long-line"></div>
+                            <div class="document-line medium-line"></div>
+                            <div class="document-line short-line"></div>
+                            <div class="document-skill">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <div class="floating-badge badge-match">
+                            <span class="badge-symbol">✓</span>
+                            Skills matter
+                        </div>
+
+                        <div class="floating-badge badge-career">
+                            <span class="badge-symbol">✦</span>
+                            New possibilities
+                        </div>
+                    </div>
+
+                    <div class="opportunity-bottom">
+                        <div>
+                            <strong>One platform.</strong>
+                            <p class="text-secondary small mb-0">
+                                More ways to move forward.
+                            </p>
+                        </div>
+                        <span class="bottom-arrow">→</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section" id="how-it-works">
+    <div class="container">
+        <div class="section-heading text-center">
+            <span class="section-eyebrow">A BETTER WAY TO FIND WORK</span>
+            <h2>Make your next move count.</h2>
+            <p>
+                Everything you need to take the next step in your career.
+            </p>
+        </div>
+
+        <div class="row g-4 mt-3">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon icon-blue">⌕</div>
+                    <h5>Discover opportunities</h5>
+                    <p>
+                        Explore vacancies and find roles that fit your
+                        interests, qualifications and skills.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon icon-purple">↗</div>
+                    <h5>Apply with confidence</h5>
+                    <p>
+                        Keep your applications organised and follow
+                        their progress from one place.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon icon-green">◎</div>
+                    <h5>Connect with employers</h5>
+                    <p>
+                        Find organisations seeking your talents and
+                        take meaningful steps towards your goals.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="recruiter-section">
+    <div class="container">
+        <div class="recruiter-banner">
+            <div>
+                <span class="section-eyebrow">FOR EMPLOYERS</span>
+                <h2>Find the people who move your business forward.</h2>
+                <p>
+                    Publish vacancies and manage your recruitment
+                    pipeline in one place.
+                </p>
+            </div>
+            <a class="btn btn-light btn-lg"
+               asp-controller="Account" asp-action="Register">
+                Start Hiring <span class="ms-2">→</span>
+            </a>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid px-0">
+
+    <div class="mb-4">
+        <span class="text-primary fw-semibold small text-uppercase">
+            System Administration
+        </span>
+        <h1 class="fw-bold mt-2">Admin Dashboard</h1>
+        <p class="text-secondary">
+            Monitor users, vacancies and application activity across TalentBridge.
+        </p>
+    </div>
+
+    <div class="row g-4 mb-4">
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small fw-semibold">Total Users</span>
+                        <span class="badge rounded-pill bg-primary-subtle text-primary">Users</span>
+                    </div>
+                    <h2 class="fw-bold mb-1">@ViewBag.TotalUsers</h2>
+                    <p class="text-secondary small mb-0">Registered accounts</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small fw-semibold">Applicants</span>
+                        <span class="badge rounded-pill bg-success-subtle text-success">Talent</span>
+                    </div>
+                    <h2 class="fw-bold mb-1">@ViewBag.ApplicantCount</h2>
+                    <p class="text-secondary small mb-0">Job seekers</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small fw-semibold">Recruiters</span>
+                        <span class="badge rounded-pill bg-info-subtle text-info">Hiring</span>
+                    </div>
+                    <h2 class="fw-bold mb-1">@ViewBag.RecruiterCount</h2>
+                    <p class="text-secondary small mb-0">Hiring accounts</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-secondary small fw-semibold">Job Listings</span>
+                        <span class="badge rounded-pill bg-warning-subtle text-warning">Jobs</span>
+                    </div>
+                    <h2 class="fw-bold mb-1">@ViewBag.TotalJobs</h2>
+                    <p class="text-secondary small mb-0">Published and stored vacancies</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-12 col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-1">Platform Overview</h5>
+                    <p class="text-secondary small mb-4">
+                        Current account distribution and application activity.
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                        <span class="text-secondary">Administrator accounts</span>
+                        <strong>@ViewBag.AdminCount</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center py-3">
+                        <span class="text-secondary">Total job applications</span>
+                        <strong>@ViewBag.TotalApplications</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-1">Administration</h5>
+                    <p class="text-secondary small mb-4">
+                        Manage the platform as additional features are added.
+                    </p>
+
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="rounded-3 bg-primary-subtle text-primary p-3">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">User Management</h6>
+                            <p class="text-secondary small mb-0">
+                                Next, we will add account search, user details and role management.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="rounded-3 bg-success-subtle text-success p-3">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">Job Management</h6>
+                            <p class="text-secondary small mb-0">
+                                Next, we will add vacancy monitoring and administration controls.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
